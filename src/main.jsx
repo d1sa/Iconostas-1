@@ -45,6 +45,16 @@ function sanitizeSvg(source) {
   return new XMLSerializer().serializeToString(document.documentElement);
 }
 
+function addSvgName(source, name) {
+  const document = new DOMParser().parseFromString(source.trim(), 'image/svg+xml');
+  if (document.querySelector('parsererror') || document.documentElement.localName !== 'svg') {
+    throw new Error('Похоже, это невалидный SVG-код');
+  }
+
+  document.documentElement.setAttribute('id', name);
+  return new XMLSerializer().serializeToString(document.documentElement);
+}
+
 function measureTooltipText(text) {
   tooltipMeasureCanvas ||= document.createElement('canvas');
   const context = tooltipMeasureCanvas.getContext('2d');
@@ -320,7 +330,8 @@ function App() {
   };
 
   const copySvg = async (icon) => {
-    await navigator.clipboard.writeText(await getSvg(icon));
+    const svg = addSvgName(await getSvg(icon), icon.title);
+    await navigator.clipboard.writeText(svg);
   };
 
   const addIcon = ({name, svg}) => {
