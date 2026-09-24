@@ -1,14 +1,49 @@
 import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {createRoot} from 'react-dom/client';
-import {Download, Search, X, Minus, Plus, Copy, Check} from 'lucide-react';
+import {Download, Search, X, Minus, Plus, Copy, Check, Upload, ClipboardPaste, FileCode2} from 'lucide-react';
 import './styles.css';
 
 const ICONS_URL = '/icons.json';
 const TAGS_URL = '/icon-tags.json';
+const CUSTOM_ICONS_KEY = 'iconostasCustomIcons';
 const normalize = (value='') => value.toString().trim().toLowerCase().replace(/\s+/g, '-');
 const cleanName = (name='') => name.replace(/^24_icon-fill\//, '').replace(/^icon-24\//, '');
 const slug = (value='') => cleanName(value).toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '-').replace(/^-|-$/g, '');
 let tooltipMeasureCanvas;
+
+function getStoredIcons() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(CUSTOM_ICONS_KEY) || '[]');
+    return Array.isArray(stored) ? stored.filter(icon => icon?.nodeId && icon?.svg) : [];
+  } catch {
+    return [];
+  }
+}
+
+function iconSrc(icon) {
+  return icon.svg
+    ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(icon.svg)}`
+    : `/icons/${encodeURIComponent(icon.file)}`;
+}
+
+function sanitizeSvg(source) {
+  const document = new DOMParser().parseFromString(source.trim(), 'image/svg+xml');
+  if (document.querySelector('parsererror') || document.documentElement.localName !== 'svg') {
+    throw new Error('Похоже, это невалидный SVG-код');
+  }
+
+  document.querySelectorAll('script, foreignObject, iframe, object, embed').forEach(node => node.remove());
+  document.querySelectorAll('*').forEach(node => {
+    [...node.attributes].forEach(attribute => {
+      if (/^on/i.test(attribute.name)) node.removeAttribute(attribute.name);
+      if (/^(href|xlink:href)$/i.test(attribute.name) && /^\s*javascript:/i.test(attribute.value)) {
+        node.removeAttribute(attribute.name);
+      }
+    });
+  });
+
+  return new XMLSerializer().serializeToString(document.documentElement);
+}
 
 function measureTooltipText(text) {
   tooltipMeasureCanvas ||= document.createElement('canvas');
@@ -60,14 +95,155 @@ function IconTooltip({title, isCopied}) {
   </span>;
 }
 
+function AddIconPopover({onClose, onAdd}) {
+  const [sourceMode, setSourceMode] = useState('file');
+  const [iconName, setIconName] = useState('');
+  const [svgDraft, setSvgDraft] = useState('');
+  const [fileName, setFileName] = useState('');
+  const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const nameInput = useRef(null);
+
+  useEffect(() => { nameInput.current?.focus(); }, []);
+
+  const acceptFile = async (file) => {
+    setError('');
+    if (!file || (!file.name.toLowerCase().endsWith('.svg') && file.type !== 'image/svg+xml')) {
+      setError('Нужен файл в формате SVG');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError('SVG должен быть меньше 2 МБ');
+      return;
+    }
+    try {
+      const source = await file.text();
+      sanitizeSvg(source);
+      setSvgDraft(source);
+      setFileName(file.name);
+      if (!iconName.trim()) setIconName(file.name.replace(/\.svg$/i, ''));
+    } catch (fileError) {
+      setError(fileError.message || 'Не удалось прочитать SVG');
+    }
+  };
+
+  const pasteFromClipboard = async () => {
+    setError('');
+    try {
+      const source = await navigator.clipboard.readText();
+      if (!source.trim()) throw new Error('В буфере обмена нет SVG-кода');
+      sanitizeSvg(source);
+      setSvgDraft(source);
+      if (!iconName.trim()) setIconName('new-icon');
+    } catch (clipboardError) {
+      setError(clipboardError.message || 'Не удалось прочитать буфер — вставьте код через ⌘V');
+    }
+  };
+
+  const submit = () => {
+    setError('');
+    if (!iconName.trim()) {
+      setError('Добавьте название иконки');
+      nameInput.current?.focus();
+      return;
+    }
+    if (!svgDraft.trim()) {
+      setError(sourceMode === 'file' ? 'Выберите или перетащите SVG-файл' : 'Вставьте SVG-код');
+      return;
+    }
+    try {
+      onAdd({name: iconName.trim(), svg: sanitizeSvg(svgDraft)});
+    } catch (svgError) {
+      setError(svgError.message || 'Не удалось добавить SVG');
+    }
+  };
+
+  return <div
+    className="add-popover"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="add-icon-title"
+    onDragEnter={event => { event.preventDefault(); setIsDragging(true); }}
+    onDragOver={event => event.preventDefault()}
+    onDragLeave={event => {
+      if (!event.currentTarget.contains(event.relatedTarget)) setIsDragging(false);
+    }}
+    onDrop={event => {
+      event.preventDefault();
+      setIsDragging(false);
+      setSourceMode('file');
+      acceptFile(event.dataTransfer.files[0]);
+    }}
+  >
+    <div className="add-popover-header">
+      <div>
+        <h2 id="add-icon-title">Добавить иконку</h2>
+        <p>SVG появится в начале коллекции</p>
+      </div>
+      <button className="icon-button" onClick={onClose} aria-label="Закрыть добавление"><X size={17}/></button>
+    </div>
+
+    <label className="field-label" htmlFor="icon-name">Название</label>
+    <input
+      ref={nameInput}
+      id="icon-name"
+      className="text-field"
+      value={iconName}
+      onChange={event => setIconName(event.target.value)}
+      placeholder="Например, arrow-up"
+      autoComplete="off"
+    />
+
+    <div className="source-tabs" role="tablist" aria-label="Способ добавления">
+      <button
+        className={sourceMode === 'file' ? 'active' : ''}
+        role="tab"
+        aria-selected={sourceMode === 'file'}
+        onClick={() => { setSourceMode('file'); setError(''); }}
+      ><Upload size={15}/>Файл</button>
+      <button
+        className={sourceMode === 'code' ? 'active' : ''}
+        role="tab"
+        aria-selected={sourceMode === 'code'}
+        onClick={() => { setSourceMode('code'); setError(''); }}
+      ><FileCode2 size={15}/>SVG-код</button>
+    </div>
+
+    {sourceMode === 'file' ? <label className={`drop-zone${isDragging ? ' is-dragging' : ''}${fileName ? ' has-file' : ''}`}>
+      <input type="file" accept=".svg,image/svg+xml" onChange={event => acceptFile(event.target.files[0])}/>
+      <span className="drop-zone-icon">{fileName ? <Check size={19}/> : <Upload size={19}/>}</span>
+      <span className="drop-zone-copy">
+        <strong>{fileName || 'Перетащите SVG сюда'}</strong>
+        <span>{fileName ? 'Файл готов к добавлению' : 'или нажмите, чтобы выбрать файл'}</span>
+      </span>
+    </label> : <div className="code-source">
+      <textarea
+        value={svgDraft}
+        onChange={event => { setSvgDraft(event.target.value); setFileName(''); setError(''); }}
+        placeholder={'<svg viewBox="0 0 24 24">…</svg>'}
+        aria-label="SVG-код"
+        spellCheck="false"
+      />
+      <button className="paste-button" onClick={pasteFromClipboard}><ClipboardPaste size={16}/>Вставить из буфера</button>
+    </div>}
+
+    <div className="add-popover-footer">
+      <span className="form-message" role="status">{error}</span>
+      <button className="primary-button" onClick={submit}>Добавить</button>
+    </div>
+  </div>;
+}
+
 function App() {
   const {icons, tags} = useIconData();
+  const [customIcons, setCustomIcons] = useState(getStoredIcons);
   const [query, setQuery] = useState('');
   const [scale, setScale] = useState(() => Number(localStorage.iconostasScale || 1));
   const [activeIcon, setActiveIcon] = useState('');
   const [copyNotice, setCopyNotice] = useState('');
   const [buttonCopied, setButtonCopied] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const searchInput = useRef(null);
   const copyNoticeTimer = useRef(null);
   const buttonCopiedTimer = useRef(null);
@@ -79,7 +255,8 @@ function App() {
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key !== 'Escape') return;
-      if (activeIcon || copyNotice) {
+      if (addOpen) setAddOpen(false);
+      else if (activeIcon || copyNotice) {
         setActiveIcon('');
         setCopyNotice('');
       }
@@ -88,9 +265,10 @@ function App() {
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [activeIcon, copyNotice, query, searchOpen]);
+  }, [activeIcon, addOpen, copyNotice, query, searchOpen]);
   useEffect(() => {
     const onPointerDown = (event) => {
+      if (!event.target.closest('.add-popover, .header-add-button')) setAddOpen(false);
       if (!event.target.closest('.card, .selection-toolbar')) {
         setActiveIcon('');
         setCopyNotice('');
@@ -114,11 +292,12 @@ function App() {
     clearTimeout(buttonCopiedTimer.current);
   }, []);
 
-  const enriched = useMemo(() => icons.map(icon => ({
+  const allIcons = useMemo(() => [...customIcons, ...icons], [customIcons, icons]);
+  const enriched = useMemo(() => allIcons.map(icon => ({
     ...icon,
     title: cleanName(icon.name),
     tags: [cleanName(icon.name), icon.file, icon.nodeId, ...(tags[icon.nodeId] || [])].map(normalize),
-  })), [icons, tags]);
+  })), [allIcons, tags]);
 
   const filtered = useMemo(() => {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
@@ -130,9 +309,10 @@ function App() {
     [activeIcon, enriched],
   );
 
+  const getSvg = async (icon) => icon.svg || fetch(`/icons/${encodeURIComponent(icon.file)}`).then(r => r.text());
+
   const download = async (icon) => {
-    const res = await fetch(`/icons/${encodeURIComponent(icon.file)}`);
-    const blob = await res.blob();
+    const blob = new Blob([await getSvg(icon)], {type: 'image/svg+xml'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = icon.file; a.click();
@@ -140,8 +320,29 @@ function App() {
   };
 
   const copySvg = async (icon) => {
-    const svg = await fetch(`/icons/${encodeURIComponent(icon.file)}`).then(r => r.text());
-    await navigator.clipboard.writeText(svg);
+    await navigator.clipboard.writeText(await getSvg(icon));
+  };
+
+  const addIcon = ({name, svg}) => {
+    const baseName = slug(name) || 'icon';
+    const nodeId = `custom:${Date.now()}`;
+    const nextIcon = {
+      nodeId,
+      name: `24_icon-fill/${name}`,
+      file: `${baseName}.svg`,
+      svg,
+      custom: true,
+    };
+    const nextIcons = [nextIcon, ...customIcons];
+    try {
+      localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(nextIcons));
+    } catch {
+      throw new Error('Не удалось сохранить иконку в браузере');
+    }
+    setCustomIcons(nextIcons);
+    setAddOpen(false);
+    setActiveIcon(nodeId);
+    setCopyNotice('');
   };
 
   const showCopyNotice = (nodeId) => {
@@ -169,8 +370,22 @@ function App() {
   return <>
     <main className="page">
       <header className="header">
-        <h1>Иконостас</h1>
-        <span className="count">{query ? `${filtered.length} из ${icons.length}` : icons.length} иконок</span>
+        <div className="header-title">
+          <h1>Иконостас</h1>
+          <span className="count">{query ? `${filtered.length} из ${allIcons.length}` : allIcons.length} иконок</span>
+        </div>
+        <button
+          className={`header-add-button${addOpen ? ' active' : ''}`}
+          onClick={() => {
+            setAddOpen(open => !open);
+            setSearchOpen(false);
+            setActiveIcon('');
+            setCopyNotice('');
+          }}
+          aria-label="Добавить иконку"
+          aria-expanded={addOpen}
+          aria-controls="add-icon-title"
+        ><Plus size={17}/><span>Добавить</span></button>
       </header>
 
       <section className="grid" style={{'--scale': scale}}>
@@ -190,7 +405,7 @@ function App() {
         >
           <img
             className="icon-glyph"
-            src={`/icons/${encodeURIComponent(icon.file)}`}
+            src={iconSrc(icon)}
             alt=""
             aria-hidden="true"
           />
@@ -200,9 +415,10 @@ function App() {
       {!filtered.length && <div className="empty"><Search size={20}/><span>Ничего не найдено</span></div>}
     </main>
     <div className="dock-wrap">
+      {addOpen && <AddIconPopover onClose={() => setAddOpen(false)} onAdd={addIcon}/>}
       {activeIconData && <div className="selection-toolbar" role="toolbar" aria-label={`Действия с ${activeIconData.title}`}>
         <span className="selection-preview" aria-hidden="true">
-          <img src={`/icons/${encodeURIComponent(activeIconData.file)}`} alt=""/>
+          <img src={iconSrc(activeIconData)} alt=""/>
         </span>
         <span className="dock-divider"/>
         <button onClick={() => copyFromToolbar(activeIconData)} aria-label={`Копировать ${activeIconData.title}`} title="Копировать SVG">
