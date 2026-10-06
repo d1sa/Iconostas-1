@@ -81,8 +81,42 @@ function useIconData() {
   return {icons, tags};
 }
 
+function useDockViewport(dockRef) {
+  useLayoutEffect(() => {
+    const viewport = window.visualViewport;
+    const dock = dockRef.current;
+    if (!viewport || !dock) return;
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      // The keyboard can shrink the visual viewport without resizing the page.
+      // Ignore pinch zoom so it does not get mistaken for an open keyboard.
+      const isUnzoomed = Math.abs(viewport.scale - 1) < .01;
+      const inset = isUnzoomed ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop) : 0;
+      dock.style.setProperty('--keyboard-inset', `${inset}px`);
+      dock.style.setProperty('--viewport-height', `${isUnzoomed ? viewport.height : window.innerHeight}px`);
+    };
+    const scheduleUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    viewport.addEventListener('resize', scheduleUpdate);
+    viewport.addEventListener('scroll', scheduleUpdate);
+    window.addEventListener('resize', scheduleUpdate);
+    return () => {
+      cancelAnimationFrame(frame);
+      viewport.removeEventListener('resize', scheduleUpdate);
+      viewport.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
+    };
+  }, [dockRef]);
+}
+
 function IconTooltip({title, isCopied}) {
   const [widths, setWidths] = useState({name: 0, success: 0});
+  const tooltip = useRef(null);
 
   useLayoutEffect(() => {
     let cancelled = false;
@@ -101,7 +135,26 @@ function IconTooltip({title, isCopied}) {
   const labelWidth = isCopied ? widths.success : widths.name;
   const style = labelWidth ? {width: `${Math.min(220, labelWidth + 16)}px`} : undefined;
 
-  return <span className="icon-tooltip" role="status" style={style}>
+  useLayoutEffect(() => {
+    const element = tooltip.current;
+    const fitToViewport = () => {
+      element.style.removeProperty('--tooltip-shift');
+      if (!isCopied) return;
+      // Use the final width, since the tooltip may still be animating its size.
+      const rect = element.parentElement.getBoundingClientRect();
+      const width = Math.min(220, labelWidth + 16);
+      const left = rect.left + (rect.width - width) / 2;
+      const viewportWidth = document.documentElement.clientWidth;
+      const shift = Math.max(8 - left, Math.min(0, viewportWidth - 8 - left - width));
+      element.style.setProperty('--tooltip-shift', `${shift}px`);
+    };
+    fitToViewport();
+    if (!isCopied) return;
+    window.addEventListener('resize', fitToViewport);
+    return () => window.removeEventListener('resize', fitToViewport);
+  }, [isCopied, labelWidth]);
+
+  return <span ref={tooltip} className="icon-tooltip" role="status" style={style}>
     <span className="tooltip-label tooltip-name"><span className="tooltip-text">{title}</span></span>
     <span className="tooltip-label tooltip-success"><Check size={13}/><span className="tooltip-text">Иконка скопирована</span></span>
   </span>;
@@ -257,12 +310,15 @@ function App() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
   const searchInput = useRef(null);
+  const dock = useRef(null);
   const copyNoticeTimer = useRef(null);
   const buttonCopiedTimer = useRef(null);
 
+  useDockViewport(dock);
+
   useEffect(() => { localStorage.iconostasScale = scale; }, [scale]);
-  useEffect(() => {
-    if (searchOpen) searchInput.current?.focus();
+  useLayoutEffect(() => {
+    if (searchOpen) searchInput.current?.focus({preventScroll: true});
   }, [searchOpen]);
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -421,13 +477,14 @@ function App() {
             src={iconSrc(icon)}
             alt=""
             aria-hidden="true"
+            draggable={false}
           />
           <IconTooltip title={icon.title} isCopied={copyNotice === icon.nodeId}/>
         </article>)}
       </section>
       {!filtered.length && <div className="empty"><Search size={20}/><span>Ничего не найдено</span></div>}
     </main>
-    <div className="dock-wrap">
+    <div ref={dock} className="dock-wrap">
       {ICON_UPLOAD_ENABLED && addOpen && <AddIconPopover onClose={() => setAddOpen(false)} onAdd={addIcon}/>}
       {activeIconData && <div className="selection-toolbar" role="toolbar" aria-label={`Действия с ${activeIconData.title}`}>
         <span className="selection-preview" aria-hidden="true">
@@ -443,14 +500,32 @@ function App() {
       </div>}
       {searchOpen && <div className="search-popover">
         <Search size={18}/>
-        <input
-          ref={searchInput}
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          placeholder="Поиск иконок"
-          aria-label="Поиск иконок"
-        />
-        {query && <button onClick={() => setQuery('')} aria-label="Очистить поиск"><X size={16}/></button>}
+        <span className="search-field">
+          <input
+            ref={searchInput}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onKeyDown={event => {
+              if (event.key === 'Enter') event.currentTarget.blur();
+            }}
+            placeholder="Поиск иконок"
+            aria-label="Поиск иконок"
+            inputMode="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+          />
+        </span>
+        {query && <button
+          onPointerDown={event => event.preventDefault()}
+          onClick={() => {
+            setQuery('');
+            searchInput.current?.focus({preventScroll: true});
+          }}
+          aria-label="Очистить поиск"
+        ><X size={16}/></button>}
       </div>}
       <div className="float-dock">
         <button

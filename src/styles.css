@@ -7,6 +7,13 @@
   font-synthesis:none;
 }
 
+html{
+  overflow-x:clip;
+  touch-action:manipulation;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+
 body{margin:0;overflow-x:clip;background:#fff}
 button,input,textarea{font:inherit;-webkit-tap-highlight-color:transparent}
 button{color:inherit}
@@ -68,7 +75,6 @@ button{color:inherit}
   transition:background-color .14s ease,border-color .14s ease,box-shadow .14s ease;
 }
 
-.header-add-button:hover,
 .header-add-button.active{
   border-color:#d9d9d9;
   background:#f5f5f5;
@@ -98,11 +104,14 @@ button{color:inherit}
   border-radius:16px;
   background:transparent;
   outline:none;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-touch-callout:none;
   transition:background-color .14s ease;
 }
 
-.card:hover,
-.card:focus-within{
+.card:focus-visible{
   background:rgb(41 51 61 / 6%);
   z-index:2;
 }
@@ -120,6 +129,7 @@ button{color:inherit}
   width:auto;
   height:auto;
   max-width:none;
+  pointer-events:none;
   transform:scale(var(--scale));
   transform-origin:center;
   transition:transform .16s ease;
@@ -140,7 +150,7 @@ button{color:inherit}
   position:absolute;
   z-index:2;
   top:calc(100% + 6px);
-  left:50%;
+  left:calc(50% + var(--tooltip-shift,0px));
   display:block;
   height:26px;
   max-width:220px;
@@ -161,7 +171,6 @@ button{color:inherit}
   transition:width .15s cubic-bezier(.2,.8,.2,1),opacity .07s ease,visibility .07s ease,transform .07s ease,background-color .12s ease;
 }
 
-.card:hover .icon-tooltip,
 .card:focus-visible .icon-tooltip,
 .card.is-copy-notice .icon-tooltip{
   opacity:1;
@@ -225,7 +234,7 @@ button{color:inherit}
 .dock-wrap{
   position:fixed;
   left:50%;
-  bottom:24px;
+  bottom:calc(24px + var(--keyboard-inset,0px));
   z-index:1000;
   display:flex;
   flex-direction:column;
@@ -263,9 +272,7 @@ button{color:inherit}
   border-radius:8px;
 }
 
-.float-dock button:hover,
-.float-dock button.active,
-.selection-toolbar button:hover{background:#f0f0f0}
+.float-dock button.active{background:#f0f0f0}
 
 .selection-toolbar{animation:selection-toolbar-in .14s cubic-bezier(.2,.8,.2,1)}
 
@@ -321,6 +328,12 @@ button{color:inherit}
   border-radius:13px;
 }
 
+.search-field{
+  min-width:0;
+  flex:1;
+  display:flex;
+}
+
 .search-popover input{
   min-width:0;
   flex:1;
@@ -332,13 +345,14 @@ button{color:inherit}
 
 .search-popover input::placeholder{color:#999}
 .search-popover button{width:28px;height:28px;border-radius:7px}
-.search-popover button:hover{background:#f0f0f0}
 
 .add-popover{
   width:min(420px,calc(100vw - 32px));
   max-height:calc(100vh - 104px);
+  max-height:calc(var(--viewport-height,100dvh) - 104px);
   padding:18px;
   overflow:auto;
+  overscroll-behavior:contain;
   border-radius:18px;
   animation:add-popover-in .18s cubic-bezier(.2,.8,.2,1);
 }
@@ -373,7 +387,6 @@ button{color:inherit}
   border-radius:8px;
 }
 
-.add-popover .icon-button:hover,
 .add-popover .icon-button:focus-visible{background:#f0f0f0}
 
 .field-label{
@@ -458,7 +471,6 @@ button{color:inherit}
   transition:background-color .14s ease,border-color .14s ease,transform .14s ease;
 }
 
-.drop-zone:hover,
 .drop-zone.is-dragging{
   border-color:#4262ff;
   background:#f4f6ff;
@@ -527,8 +539,6 @@ button{color:inherit}
   font-weight:500;
 }
 
-.add-popover .paste-button:hover{background:#e8e8e8}
-
 .add-popover-footer{
   min-height:34px;
   display:flex;
@@ -557,20 +567,46 @@ button{color:inherit}
   font-weight:600;
 }
 
-.add-popover .primary-button:hover{background:#151b20}
-
 @keyframes add-popover-in{
   from{opacity:0;transform:translateY(8px) scale(.985)}
   to{opacity:1;transform:translateY(0) scale(1)}
 }
 
 @media(max-width:720px){
-  .page{padding:20px 16px calc(128px + env(safe-area-inset-bottom))}
+  .page{padding:calc(20px + env(safe-area-inset-top)) 16px calc(128px + env(safe-area-inset-bottom))}
   .header{margin-bottom:48px}
   .dock-wrap{
-    bottom:max(14px,env(safe-area-inset-bottom));
+    bottom:calc(max(14px,env(safe-area-inset-bottom)) + var(--keyboard-inset,0px));
     width:calc(100vw - 32px);
   }
+}
+
+@media(any-pointer:coarse){
+  html{overscroll-behavior:none}
+  .search-field{position:relative;height:21px}
+  /* Safari sees 16px, while scaling preserves the existing 14px appearance. */
+  .search-popover input{
+    position:absolute;
+    top:0;
+    left:0;
+    width:calc(100% / .875);
+    height:calc(100% / .875);
+    padding:calc(1px / .875) calc(2px / .875);
+    font-size:16px;
+    transform:scale(.875);
+    transform-origin:top left;
+  }
+}
+
+@media(hover:hover) and (pointer:fine){
+  .header-add-button:hover{border-color:#d9d9d9;background:#f5f5f5}
+  .card:not(.is-active):not(.is-copy-notice):is(:hover,:focus-within){background:rgb(41 51 61 / 6%);z-index:2}
+  .card:hover .icon-tooltip{opacity:1;visibility:visible;transform:translate(-50%,0)}
+  .float-dock button:hover,.selection-toolbar button:hover,.search-popover button:hover{background:#f0f0f0}
+  .add-popover .icon-button:hover{background:#f0f0f0}
+  .drop-zone:hover:not(.has-file){border-color:#4262ff;background:#f4f6ff}
+  .add-popover .paste-button:hover{background:#e8e8e8}
+  .add-popover .primary-button:hover{background:#151b20}
 }
 
 @media(max-width:430px){
