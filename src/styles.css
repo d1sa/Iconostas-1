@@ -100,6 +100,8 @@ button{color:inherit}
   height:56px;
   display:grid;
   place-items:center;
+  padding:0;
+  border:0;
   cursor:pointer;
   border-radius:16px;
   background:transparent;
@@ -116,8 +118,7 @@ button{color:inherit}
   z-index:2;
 }
 
-.card.is-active,
-.card.is-copy-notice{
+.card.is-active{
   background:rgb(41 51 61 / 10%);
   z-index:100;
 }
@@ -150,12 +151,11 @@ button{color:inherit}
   position:absolute;
   z-index:2;
   top:calc(100% + 6px);
-  left:calc(50% + var(--tooltip-shift,0px));
-  display:block;
-  height:26px;
+  left:50%;
   max-width:220px;
-  padding:0;
-  overflow:visible;
+  padding:5px 8px;
+  overflow:hidden;
+  text-overflow:ellipsis;
   color:#fff;
   background:#171a1d;
   border-radius:999px;
@@ -168,57 +168,43 @@ button{color:inherit}
   font-weight:500;
   line-height:16px;
   white-space:nowrap;
-  transition:width .15s cubic-bezier(.2,.8,.2,1),opacity .07s ease,visibility .07s ease,transform .07s ease,background-color .12s ease;
+  transition:opacity .07s ease,visibility .07s ease,transform .07s ease;
 }
 
-.card:focus-visible .icon-tooltip,
-.card.is-copy-notice .icon-tooltip{
+/* Once a card is selected its name moves to the selection toolbar. */
+.card:not(.is-active):focus-visible .icon-tooltip{
   opacity:1;
   visibility:visible;
   transform:translate(-50%,0);
 }
 
-.tooltip-label{
-  position:absolute;
-  inset:0;
+.copy-toast{
+  position:fixed;
+  top:calc(16px + env(safe-area-inset-top));
+  left:50%;
+  z-index:1100;
   display:flex;
-  min-width:0;
-  padding:5px 8px;
-  overflow:visible;
   align-items:center;
-  justify-content:center;
-  gap:5px;
-}
-
-.tooltip-text{
-  display:block;
-  flex:none;
+  gap:6px;
+  padding:8px 14px 8px 11px;
+  color:#fff;
+  background:#168653;
+  border-radius:999px;
+  box-shadow:0 8px 28px rgba(0,0,0,.16);
+  font-size:13px;
+  font-weight:500;
+  line-height:18px;
   white-space:nowrap;
+  pointer-events:none;
+  animation:copy-toast 1.6s cubic-bezier(.2,.8,.2,1) forwards;
 }
 
-.tooltip-success svg{flex:none}
+.copy-toast svg{flex:none}
 
-.tooltip-success{
-  opacity:0;
-  transform:translateY(14px);
-}
-
-.card.is-copy-notice .icon-tooltip{background:#168653}
-
-.card.is-copy-notice .tooltip-name{
-  animation:tooltip-name-out .1s ease-in forwards;
-}
-
-.card.is-copy-notice .tooltip-success{
-  animation:tooltip-success-in .14s .04s cubic-bezier(.2,.8,.2,1) forwards;
-}
-
-@keyframes tooltip-name-out{
-  to{opacity:0;transform:translateY(-14px)}
-}
-
-@keyframes tooltip-success-in{
-  to{opacity:1;transform:translateY(0)}
+@keyframes copy-toast{
+  0%{opacity:0;transform:translate(-50%,-8px)}
+  10%,85%{opacity:1;transform:translate(-50%,0)}
+  100%{opacity:0;transform:translate(-50%,-4px)}
 }
 
 .empty{
@@ -229,6 +215,39 @@ button{color:inherit}
   gap:8px;
   color:#777;
   font-size:14px;
+}
+
+.retry-button{
+  height:32px;
+  padding:0 12px;
+  border:1px solid #e4e4e4;
+  border-radius:9px;
+  background:#fff;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:500;
+}
+
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
+
+.dock-toast{
+  max-width:min(360px,calc(100vw - 32px));
+  padding:8px 12px;
+  border-radius:11px;
+  color:#fff;
+  background:#c4372b;
+  box-shadow:0 8px 28px rgba(0,0,0,.14);
+  font-size:13px;
+  line-height:18px;
+  text-align:center;
+  animation:selection-toolbar-in .14s cubic-bezier(.2,.8,.2,1);
 }
 
 .dock-wrap{
@@ -288,6 +307,17 @@ button{color:inherit}
   width:32px;
   height:33px;
   object-fit:contain;
+}
+
+.selection-name{
+  min-width:0;
+  max-width:200px;
+  padding:0 8px 0 2px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:13px;
+  font-weight:500;
 }
 
 @keyframes selection-toolbar-in{
@@ -600,8 +630,8 @@ button{color:inherit}
 
 @media(hover:hover) and (pointer:fine){
   .header-add-button:hover{border-color:#d9d9d9;background:#f5f5f5}
-  .card:not(.is-active):not(.is-copy-notice):is(:hover,:focus-within){background:rgb(41 51 61 / 6%);z-index:2}
-  .card:hover .icon-tooltip{opacity:1;visibility:visible;transform:translate(-50%,0)}
+  .card:not(.is-active):is(:hover,:focus-within){background:rgb(41 51 61 / 6%);z-index:2}
+  .card:not(.is-active):hover .icon-tooltip{opacity:1;visibility:visible;transform:translate(-50%,0)}
   .float-dock button:hover,.selection-toolbar button:hover,.search-popover button:hover{background:#f0f0f0}
   .add-popover .icon-button:hover{background:#f0f0f0}
   .drop-zone:hover:not(.has-file){border-color:#4262ff;background:#f4f6ff}

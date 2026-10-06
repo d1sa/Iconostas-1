@@ -36,10 +36,10 @@
   },
   {
     "nodeId": "1:27",
-    "name": "24_icon-fill/credit card",
+    "name": "24_icon-fill/credit-card",
     "x": 338,
     "y": 100,
-    "file": "credit card.svg"
+    "file": "credit-card.svg"
   },
   {
     "nodeId": "69:177",
@@ -60,7 +60,7 @@
     "name": "24_icon-fill/cardholder",
     "x": 440,
     "y": 100,
-    "file": "cardholder-1.svg"
+    "file": "cardholder.svg"
   },
   {
     "nodeId": "1:43",
@@ -242,7 +242,7 @@
     "name": "24_icon-fill/steering-wheel",
     "x": 202,
     "y": 203,
-    "file": "steering-wheel--129-178.svg"
+    "file": "steering-wheel.svg"
   },
   {
     "nodeId": "1:111",
@@ -284,7 +284,7 @@
     "name": "24_icon-fill/cup",
     "x": 406,
     "y": 203,
-    "file": "cup--56-22.svg"
+    "file": "cup.svg"
   },
   {
     "nodeId": "1:132",
@@ -393,10 +393,10 @@
   },
   {
     "nodeId": "1:222",
-    "name": "24_icon-fill/SIM",
+    "name": "24_icon-fill/sim",
     "x": 202,
     "y": 271,
-    "file": "SIM.svg"
+    "file": "sim.svg"
   },
   {
     "nodeId": "1:189",
@@ -421,10 +421,10 @@
   },
   {
     "nodeId": "1:809",
-    "name": "24_icon-fill/briefcase_alt",
+    "name": "24_icon-fill/briefcase-alt",
     "x": 338,
     "y": 271,
-    "file": "briefcase_alt.svg"
+    "file": "briefcase-alt.svg"
   },
   {
     "nodeId": "1:203",
@@ -456,10 +456,10 @@
   },
   {
     "nodeId": "1:262",
-    "name": "24_icon-fill/catalog_alt",
+    "name": "24_icon-fill/catalog-alt",
     "x": 168,
     "y": 305,
-    "file": "catalog_alt.svg"
+    "file": "catalog-alt.svg"
   },
   {
     "nodeId": "1:264",
@@ -484,10 +484,10 @@
   },
   {
     "nodeId": "1:232",
-    "name": "24_icon-fill/gear_skeleton",
+    "name": "24_icon-fill/gear-skeleton",
     "x": 304,
     "y": 305,
-    "file": "gear_skeleton.svg"
+    "file": "gear-skeleton.svg"
   },
   {
     "nodeId": "1:234",
@@ -519,10 +519,10 @@
   },
   {
     "nodeId": "1:309",
-    "name": "24_icon-fill/document_alt_4",
+    "name": "24_icon-fill/document-alt-4",
     "x": 100,
     "y": 339,
-    "file": "document_alt_4.svg"
+    "file": "document-alt-4.svg"
   },
   {
     "nodeId": "266:59",
@@ -533,17 +533,17 @@
   },
   {
     "nodeId": "1:319",
-    "name": "24_icon-fill/document-alt_6",
+    "name": "24_icon-fill/document-alt-6",
     "x": 168,
     "y": 339,
-    "file": "document-alt_6.svg"
+    "file": "document-alt-6.svg"
   },
   {
     "nodeId": "1:324",
-    "name": "24_icon-fill/document-alt_7",
+    "name": "24_icon-fill/document-alt-7",
     "x": 202,
     "y": 339,
-    "file": "document-alt_7.svg"
+    "file": "document-alt-7.svg"
   },
   {
     "nodeId": "1:268",
@@ -582,10 +582,10 @@
   },
   {
     "nodeId": "1:297",
-    "name": "24_icon-fill/document_alt_2",
+    "name": "24_icon-fill/document-alt-2",
     "x": 406,
     "y": 339,
-    "file": "document_alt_2.svg"
+    "file": "document-alt-2.svg"
   },
   {
     "nodeId": "1:303",
@@ -631,24 +631,24 @@
   },
   {
     "nodeId": "1:332",
-    "name": "24_icon-fill/document-alt_9",
+    "name": "24_icon-fill/document-alt-9",
     "x": 270,
     "y": 373,
-    "file": "document-alt_9.svg"
+    "file": "document-alt-9.svg"
   },
   {
     "nodeId": "1:334",
-    "name": "24_icon-fill/document-alt_10",
+    "name": "24_icon-fill/document-alt-10",
     "x": 304,
     "y": 373,
-    "file": "document-alt_10.svg"
+    "file": "document-alt-10.svg"
   },
   {
     "nodeId": "1:336",
-    "name": "24_icon-fill/document-alt_5",
+    "name": "24_icon-fill/document-alt-5",
     "x": 338,
     "y": 373,
-    "file": "document-alt_5-1.svg"
+    "file": "document-alt-5.svg"
   },
   {
     "nodeId": "1:342",
@@ -666,17 +666,17 @@
   },
   {
     "nodeId": "1:347",
-    "name": "24_icon-fill/bell-off_alt",
+    "name": "24_icon-fill/bell-off-alt",
     "x": 440,
     "y": 373,
-    "file": "bell-off_alt.svg"
+    "file": "bell-off-alt.svg"
   },
   {
     "nodeId": "1:410",
     "name": "24_icon-fill/health-cross",
     "x": 100,
     "y": 408,
-    "file": "health-cross--1-410.svg"
+    "file": "health-cross.svg"
   },
   {
     "nodeId": "1:413",
@@ -781,7 +781,7 @@
     "name": "24_icon-fill/play",
     "x": 236,
     "y": 442,
-    "file": "play--264-41.svg"
+    "file": "play.svg"
   },
   {
     "nodeId": "63:82",
@@ -858,7 +858,7 @@
     "name": "24_icon-fill/pause",
     "x": 236,
     "y": 476,
-    "file": "pause--264-43.svg"
+    "file": "pause.svg"
   },
   {
     "nodeId": "63:28",
@@ -1121,7 +1121,7 @@
   },
   {
     "nodeId": "71:201",
-    "name": "smile-qr 1",
+    "name": "24_icon-fill/smile-qr-1",
     "x": 440,
     "y": 578,
     "file": "smile-qr-1.svg"
@@ -1142,7 +1142,7 @@
   },
   {
     "nodeId": "1:719",
-    "name": "icon-24/chevron-centred",
+    "name": "24_icon-fill/chevron-centred",
     "x": 168,
     "y": 613,
     "file": "chevron-centred.svg"
@@ -1177,24 +1177,24 @@
   },
   {
     "nodeId": "71:187",
-    "name": "dollar 1",
+    "name": "24_icon-fill/dollar",
     "x": 338,
     "y": 613,
-    "file": "dollar-1.svg"
+    "file": "dollar.svg"
   },
   {
     "nodeId": "71:191",
-    "name": "euro 1",
+    "name": "24_icon-fill/euro",
     "x": 372,
     "y": 613,
-    "file": "euro-1.svg"
+    "file": "euro.svg"
   },
   {
     "nodeId": "71:196",
-    "name": "ruble 1",
+    "name": "24_icon-fill/ruble",
     "x": 406,
     "y": 613,
-    "file": "ruble-1.svg"
+    "file": "ruble.svg"
   },
   {
     "nodeId": "1:733",
@@ -1355,14 +1355,14 @@
     "name": "24_icon-fill/coin-chart",
     "x": 440,
     "y": 681,
-    "file": "coin-chart--67-126.svg"
+    "file": "coin-chart.svg"
   },
   {
     "nodeId": "67:130",
-    "name": "24_icon-fill/coin_down",
+    "name": "24_icon-fill/coin-down",
     "x": 100,
     "y": 715,
-    "file": "coin_down--67-130.svg"
+    "file": "coin-down.svg"
   },
   {
     "nodeId": "63:88",
@@ -1376,7 +1376,7 @@
     "name": "24_icon-fill/coin",
     "x": 168,
     "y": 715,
-    "file": "coin--67-134.svg"
+    "file": "coin.svg"
   },
   {
     "nodeId": "1:762",
@@ -1411,21 +1411,21 @@
     "name": "24_icon-fill/dislike",
     "x": 338,
     "y": 715,
-    "file": "dislike--67-117.svg"
+    "file": "dislike.svg"
   },
   {
     "nodeId": "67:119",
     "name": "24_icon-fill/like",
     "x": 372,
     "y": 715,
-    "file": "like--67-119.svg"
+    "file": "like.svg"
   },
   {
     "nodeId": "67:121",
     "name": "24_icon-fill/folder",
     "x": 406,
     "y": 715,
-    "file": "folder--67-121.svg"
+    "file": "folder.svg"
   },
   {
     "nodeId": "69:165",
@@ -1450,10 +1450,10 @@
   },
   {
     "nodeId": "80:455",
-    "name": "24_icon-fill/arrow-uturn_alt",
+    "name": "24_icon-fill/arrow-uturn-alt",
     "x": 236,
     "y": 749,
-    "file": "arrow-uturn_alt.svg"
+    "file": "arrow-uturn-alt.svg"
   },
   {
     "nodeId": "93:143",
@@ -1474,7 +1474,7 @@
     "name": "24_icon-fill/limit-100",
     "x": 338,
     "y": 749,
-    "file": "limit-100--132-72.svg"
+    "file": "limit-100.svg"
   },
   {
     "nodeId": "98:158",
@@ -1488,7 +1488,7 @@
     "name": "24_icon-fill/limit-50",
     "x": 406,
     "y": 749,
-    "file": "limit-50--132-86.svg"
+    "file": "limit-50.svg"
   },
   {
     "nodeId": "99:216",
@@ -1527,10 +1527,10 @@
   },
   {
     "nodeId": "222:10",
-    "name": "24_icon-fill/globe_alt",
+    "name": "24_icon-fill/globe-alt",
     "x": 304,
     "y": 783,
-    "file": "globe_alt--222-10.svg"
+    "file": "globe-alt.svg"
   },
   {
     "nodeId": "126:75",
@@ -1664,5 +1664,105 @@
     "x": 236,
     "y": 852,
     "file": "counter-plus.svg"
+  },
+  {
+    "nodeId": "local:agent-face",
+    "name": "24_icon-fill/agent-face",
+    "file": "agent-face.svg"
+  },
+  {
+    "nodeId": "local:agent",
+    "name": "24_icon-fill/agent",
+    "file": "agent.svg"
+  },
+  {
+    "nodeId": "local:ai",
+    "name": "24_icon-fill/ai",
+    "file": "ai.svg"
+  },
+  {
+    "nodeId": "local:brain",
+    "name": "24_icon-fill/brain",
+    "file": "brain.svg"
+  },
+  {
+    "nodeId": "local:card-wireless",
+    "name": "24_icon-fill/card-wireless",
+    "file": "card-wireless.svg"
+  },
+  {
+    "nodeId": "local:catalog-ai",
+    "name": "24_icon-fill/catalog-ai",
+    "file": "catalog-ai.svg"
+  },
+  {
+    "nodeId": "local:code-agent",
+    "name": "24_icon-fill/code-agent",
+    "file": "code-agent.svg"
+  },
+  {
+    "nodeId": "local:cursor-ai",
+    "name": "24_icon-fill/cursor-ai",
+    "file": "cursor-ai.svg"
+  },
+  {
+    "nodeId": "local:face-id",
+    "name": "24_icon-fill/face-id",
+    "file": "face-id.svg"
+  },
+  {
+    "nodeId": "local:feather-ai",
+    "name": "24_icon-fill/feather-ai",
+    "file": "feather-ai.svg"
+  },
+  {
+    "nodeId": "local:hand",
+    "name": "24_icon-fill/hand",
+    "file": "hand.svg"
+  },
+  {
+    "nodeId": "local:idea-ai",
+    "name": "24_icon-fill/idea-ai",
+    "file": "idea-ai.svg"
+  },
+  {
+    "nodeId": "local:keyboard",
+    "name": "24_icon-fill/keyboard",
+    "file": "keyboard.svg"
+  },
+  {
+    "nodeId": "local:lamp-off",
+    "name": "24_icon-fill/lamp-off",
+    "file": "lamp-off.svg"
+  },
+  {
+    "nodeId": "local:lamp",
+    "name": "24_icon-fill/lamp",
+    "file": "lamp.svg"
+  },
+  {
+    "nodeId": "local:pencil-ai",
+    "name": "24_icon-fill/pencil-ai",
+    "file": "pencil-ai.svg"
+  },
+  {
+    "nodeId": "local:pencil",
+    "name": "24_icon-fill/pencil",
+    "file": "pencil.svg"
+  },
+  {
+    "nodeId": "local:sofa",
+    "name": "24_icon-fill/sofa",
+    "file": "sofa.svg"
+  },
+  {
+    "nodeId": "local:square-wireless-alt",
+    "name": "24_icon-fill/square-wireless-alt",
+    "file": "square-wireless-alt.svg"
+  },
+  {
+    "nodeId": "local:terminal",
+    "name": "24_icon-fill/terminal",
+    "file": "terminal.svg"
   }
 ]
