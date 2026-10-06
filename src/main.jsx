@@ -6,6 +6,8 @@ import './styles.css';
 const ICONS_URL = '/icons.json';
 const TAGS_URL = '/icon-tags.json';
 const CUSTOM_ICONS_KEY = 'iconostasCustomIcons';
+// Temporarily hide uploads; set to true to restore the existing add-icon flow.
+const ICON_UPLOAD_ENABLED = false;
 const normalize = (value='') => value.toString().trim().toLowerCase().replace(/\s+/g, '-');
 const cleanName = (name='') => name.replace(/^24_icon-fill\//, '').replace(/^icon-24\//, '');
 const slug = (value='') => cleanName(value).toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '-').replace(/^-|-$/g, '');
@@ -385,7 +387,7 @@ function App() {
           <h1>Иконостас</h1>
           <span className="count">{query ? `${filtered.length} из ${allIcons.length}` : allIcons.length} иконок</span>
         </div>
-        <button
+        {ICON_UPLOAD_ENABLED && <button
           className={`header-add-button${addOpen ? ' active' : ''}`}
           onClick={() => {
             setAddOpen(open => !open);
@@ -396,7 +398,7 @@ function App() {
           aria-label="Добавить иконку"
           aria-expanded={addOpen}
           aria-controls="add-icon-title"
-        ><Plus size={17}/><span>Добавить</span></button>
+        ><Plus size={17}/><span>Добавить</span></button>}
       </header>
 
       <section className="grid" style={{'--scale': scale}}>
@@ -426,7 +428,7 @@ function App() {
       {!filtered.length && <div className="empty"><Search size={20}/><span>Ничего не найдено</span></div>}
     </main>
     <div className="dock-wrap">
-      {addOpen && <AddIconPopover onClose={() => setAddOpen(false)} onAdd={addIcon}/>}
+      {ICON_UPLOAD_ENABLED && addOpen && <AddIconPopover onClose={() => setAddOpen(false)} onAdd={addIcon}/>}
       {activeIconData && <div className="selection-toolbar" role="toolbar" aria-label={`Действия с ${activeIconData.title}`}>
         <span className="selection-preview" aria-hidden="true">
           <img src={iconSrc(activeIconData)} alt=""/>
